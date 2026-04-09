@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% block title %}{{ ad.title }}{% endblock %}
+
+{% block content %}
+<style>
+    .ad-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+        padding: 30px 0;
+    }
+
+    .ad-main-card {
+        border: 2px solid #dc3545;
+        border-radius: 16px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .ad-main-card img {
+        border-bottom: 2px solid #dc3545;
+    }
+
+    .ad-main-card .card-body {
+        padding: 40px;
+    }
+
+    .ad-main-card h1 {
+        color: #dc3545;
+        margin-bottom: 30px;
+        font-size: 32px;
+    }
+
+    .ad-meta {
+        color: #718096;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .ad-description h5 {
+        color: #dc3545;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .ad-description p {
+        color: #495057;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .reviews-section {
+        border: 2px solid #dc3545;
+        border-radius: 16px;
+        background: #fff;
+        margin-top: 30px;
+    }
+
+    .reviews-section .card-body {
+        padding: 40px;
+    }
+
+    .reviews-section h4 {
+        color: #dc3545;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .btn-review {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 12px 24px;
+    }
+
+    .review-item {
+        background: #f8f9fa;
+        border-left: 4px solid #dc3545;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .review-item h6 {
+        color: #2d3748;
+        font-weight: 700;
+    }
+
+    .review-item .badge {
+        background: #dc3545;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .sidebar-card {
+        border: 2px solid #dc3545;
+        border-radius: 16px;
+        background: #fff;
+        padding: 30px;
+    }
+
+    .price-display {
+        color: #dc3545;
+        font-size: 36px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .seller-card {
+        background: #f8f9fa;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .seller-avatar {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 24px;
+    }
+
+    .seller-card h6 {
+        color: #2d3748;
+        font-weight: 700;
+    }
+
+    .btn-action {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .btn-action:hover {
+        color: #fff;
+    }
+
+    .btn-favorite {
+        background: #fff;
+        border: 2px solid #dc3545;
+        color: #dc3545;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .btn-favorite.active {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .btn-edit, .btn-delete {
+        background: #f8f9fa;
+        border: 2px solid #e2e8f0;
+        color: #2d3748;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .btn-delete {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    @media (max-width: 768px) {
+        .ad-main-card .card-body,
+        .reviews-section .card-body {
+            padding: 25px;
+        }
+
+        .ad-main-card h1 {
+            font-size: 24px;
+        }
+
+        .price-display {
+            font-size: 28px;
+        }
+
+        .sidebar-card {
+            padding: 20px;
+            margin-top: 30px;
+        }
+    }
+</style>
+
+<div class="ad-container">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-8">
+                <div class="ad-main-card">
+                    {% if ad.image %}
+                        <img src="{{ ad.image.url }}" class="w-100" style="max-height: 500px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="ad-meta">
+                            <span>{{ ad.category.name }} • {{ ad.city.name }}</span>
+                            <span class="ms-3">{{ ad.created_at|date:"d E Y, H:i" }}</span>
+                        </div>
+                        <h1 class="fw-bold">{{ ad.title }}</h1>
+                        <div class="ad-description">
+                            <h5>Описание</h5>
+                            <p style="white-space: pre-line;">{{ ad.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Отзывы -->
+                <div class="reviews-section">
+                    <div class="card-body">
+                        <h4>
+                            {% if ad.reviews.count %}
+                                Отзывы ({{ ad.reviews.count }})
+                            {% else %}
+                                Еще нет отзывов
+                            {% endif %}
+                        </h4>
+
+                        {% if request.user.is_authenticated %}
+                            <div class="mb-4 pb-4 border-bottom">
+                                <a href="{% url 'create_review' ad.uuid %}" class="btn btn-review">✍️ Написать отзыв</a>
+                            </div>
+                        {% endif %}
+
+                        {% for review in ad.reviews.all %}
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h6 class="mb-1">{{ review.author.first_name }} {{ review.author.last_name }}</h6>
+                                        <small class="text-muted">{{ review.created_at|date:"d M Y, H:i" }}</small>
+                                    </div>
+                                    <span class="badge">{{ review.rating }}★</span>
+                                </div>
+                                <p class="mb-0 text-secondary">{{ review.comment }}</p>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted text-center py-4">Отзывов еще нет. Будьте первым!</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="sidebar-card sticky-top" style="top: 80px;">
+                    <div class="price-display">
+                        {% if ad.price == 0 %}Бесплатно{% else %}{{ ad.price }} ₸{% endif %}
+                    </div>
+
+                    <div class="seller-card">
+                        <div class="d-flex align-items-center">
+                            <div class="seller-avatar me-3">
+                                {{ ad.author.first_name|first|default:"U" }}
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ ad.author.first_name }} {{ ad.author.last_name }}</h6>
+                                <small class="text-muted">На сайте с {{ ad.author.date_joined|date:"Y" }} года</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <button class="btn btn-action btn-lg">Показать телефон</button>
+                        <a href="{% url 'toggle_favorite' ad.uuid %}" class="btn btn-favorite btn-lg {% if is_favorite %}active{% endif %}">
+                            {% if is_favorite %}♥ Убрать из избранного{% else %}♡ Добавить в избранное{% endif %}
+                        </a>
+                    </div>
+
+                    {% if request.user == ad.author %}
+                        <hr class="my-4">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'ad_update' ad.uuid %}" class="btn btn-edit flex-grow-1">✎ Редактировать</a>
+                            <a href="{% url 'ad_delete' ad.uuid %}" class="btn btn-delete flex-grow-1">🗑 Удалить</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+    </div>
+</div>
+

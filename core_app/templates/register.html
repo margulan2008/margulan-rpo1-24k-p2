@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<style>
+    .register-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+        padding: 20px;
+    }
+
+    .register-card {
+        border: 3px solid #dc3545;
+        box-shadow: 0 10px 40px rgba(220, 53, 69, 0.15);
+        border-radius: 16px;
+        background: #fff;
+    }
+
+    .register-card .card-body {
+        padding: 50px;
+    }
+
+    .register-card h2 {
+        color: #dc3545;
+        margin-bottom: 30px;
+        text-align: center;
+        font-size: 28px;
+    }
+
+    form input, form textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        background-color: #f7fafc;
+        font-size: 16px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+
+    form input:focus, form textarea:focus {
+        border-color: #dc3545;
+        outline: none;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+
+    form input::placeholder, form textarea::placeholder {
+        color: #a0aec0;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: block;
+        color: #2d3748;
+        font-size: 15px;
+    }
+
+    .helptext {
+        font-size: 13px;
+        color: #718096;
+        margin-top: -15px;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .alert-danger {
+        background-color: #fed7d7;
+        border: 1px solid #fc8181;
+        border-radius: 10px;
+        color: #c53030;
+        margin-bottom: 25px;
+    }
+
+    .alert-danger p {
+        margin-bottom: 5px;
+    }
+
+    hr {
+        margin: 30px 0;
+        border: none;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .login-link {
+        text-align: center;
+        color: #718096;
+        font-size: 15px;
+    }
+
+    .login-link a {
+        color: #dc3545;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    /* Mobile optimization */
+    @media (max-width: 576px) {
+        .register-card .card-body {
+            padding: 30px 20px;
+        }
+
+        .register-card h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        form input, form textarea {
+            padding: 12px 14px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .helptext {
+            font-size: 12px;
+            margin-top: -12px;
+            margin-bottom: 15px;
+        }
+
+        .btn-submit {
+            padding: 12px;
+            font-size: 15px;
+        }
+
+        .login-link {
+            font-size: 14px;
+        }
+
+        hr {
+            margin: 20px 0;
+        }
+    }
+
+    /* Tablet optimization */
+    @media (min-width: 577px) and (max-width: 768px) {
+        .register-card .card-body {
+            padding: 40px;
+        }
+
+        .register-card h2 {
+            font-size: 26px;
+        }
+    }
+</style>
+
+<div class="register-container">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-7">
+                <div class="card register-card">
+                    <div class="card-body">
+                        <h2 class="fw-bold">Регистрация</h2>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- First name field -->
+                            <div>
+                                {{ form.first_name.label_tag }}
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="alert alert-danger">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Username field -->
+                            <div>
+                                {{ form.username.label_tag }}
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="alert alert-danger">{{ form.username.errors }}</div>
+                                {% endif %}
+                                {% if form.username.help_text %}
+                                    <small class="helptext">{{ form.username.help_text|safe }}</small>
+                                {% endif %}
+                            </div>
+
+                            <!-- Other fields -->
+                            {% for field in form %}
+                                {% if field.name not in 'first_name,username' %}
+                                    <div>
+                                        {{ field.label_tag }}
+                                        {{ field }}
+                                        {% if field.errors %}
+                                            <div class="alert alert-danger">{{ field.errors }}</div>
+                                        {% endif %}
+                                        {% if field.help_text %}
+                                            <small class="helptext">{{ field.help_text|safe }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-submit text-white btn-lg">Зарегистрироваться</button>
+                            </div>
+                        </form>
+
+                        <hr>
+                        <p class="login-link">
+                            Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

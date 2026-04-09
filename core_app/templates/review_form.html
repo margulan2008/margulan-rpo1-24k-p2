@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block title %}Написать отзыв{% endblock %}
+
+{% block content %}
+<style>
+    .review-form-wrap {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .review-form-card {
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .review-form-head {
+        background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+        color: #fff;
+        padding: 28px;
+    }
+
+    .review-form-head h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .review-form-head p {
+        margin: 8px 0 0;
+        opacity: 0.9;
+    }
+
+    .ad-preview-box {
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        background: #f8f9fa;
+        padding: 14px 16px;
+        margin-bottom: 24px;
+    }
+
+    .ad-preview-box h6 {
+        margin: 0 0 6px;
+        font-weight: 700;
+    }
+
+    .ad-preview-price {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .rating-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .rating-row input[type="radio"] {
+        display: none;
+    }
+
+    .rating-row label {
+        padding: 8px 14px;
+        border: 1px solid #ced4da;
+        border-radius: 999px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 600;
+        color: #495057;
+        transition: 0.2s ease;
+    }
+
+    .rating-row label:hover {
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+
+    .rating-row input[type="radio"]:checked + label {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
+
+    textarea.form-control {
+        border-radius: 10px;
+        min-height: 140px;
+    }
+
+    .review-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .error-list {
+        margin: 8px 0 0;
+        color: #dc3545;
+        padding-left: 18px;
+    }
+
+    @media (max-width: 576px) {
+        .review-form-head {
+            padding: 20px;
+        }
+
+        .review-actions {
+            flex-direction: column;
+        }
+
+        .review-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="review-form-wrap mt-3 mb-5">
+    <div class="card review-form-card">
+        <div class="review-form-head">
+            <h2>Оставить отзыв</h2>
+            <p>Поделитесь своим впечатлением о товаре</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="ad-preview-box">
+                <h6>{{ ad.title }}</h6>
+                <div class="ad-preview-price">{% if ad.price == 0 %}Бесплатно{% else %}{{ ad.price }} ₸{% endif %}</div>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label">Оценка</label>
+                    <div class="rating-row">
+                        {% for radio in form.rating %}
+                            {% if radio.choice_label != '---------' %}
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}">{{ radio.choice_label }} ★</label>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if form.rating.errors %}
+                        <ul class="error-list">
+                            {% for error in form.rating.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_comment" class="form-label">Комментарий</label>
+                    <textarea name="comment" id="id_comment" class="form-control" placeholder="Расскажите о вашем опыте с этим товаром...">{{ form.comment.value|default:"" }}</textarea>
+                    {% if form.comment.errors %}
+                        <ul class="error-list">
+                            {% for error in form.comment.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="review-actions">
+                    <a href="{% url 'ad_detail' ad.uuid %}" class="btn btn-outline-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-danger">Опубликовать отзыв</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

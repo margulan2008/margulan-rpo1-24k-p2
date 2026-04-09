@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}Редактировать{% else %}Подать объявление{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Простой хак для стилизации стандартных полей Django под Bootstrap */
+    form input, form select, form textarea { width: 100%; padding: 12px; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 20px; background-color: #f8f9fa;}
+    form input:focus, form select:focus, form textarea:focus { border-color: #dc3545; outline: none; background-color: #fff;}
+    label { font-weight: 600; margin-bottom: 8px; display: block; color: #495057;}
+    .helptext { font-size: 13px; color: #6c757d; margin-top: -15px; margin-bottom: 20px; display: block;}
+</style>
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-5">
+                <h2 class="fw-bold mb-4">{% if form.instance.pk %}Редактировать объявление{% else %}Подать объявление{% endif %}</h2>
+
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <a href="{% url 'profile' %}" class="btn btn-light btn-lg px-4 rounded-pill">Отмена</a>
+                        <button type="submit" class="btn btn-danger btn-lg px-5 rounded-pill">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

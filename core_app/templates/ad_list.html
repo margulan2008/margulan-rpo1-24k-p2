@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Все объявления{% endblock %}
+
+{% block content %}
+<!-- Поиск и Фильтры -->
+<div class="card border-0 shadow-sm mb-4 rounded-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2">
+            <div class="col-md-7">
+                <input type="text" name="q" class="form-control form-control-lg bg-light border-0" placeholder="Я ищу..." value="{{ request.GET.q }}">
+            </div>
+            <div class="col-md-3">
+                <select name="sort" class="form-select form-select-lg bg-light border-0">
+                    <option value="">Сначала новые</option>
+                    <option value="cheap" {% if request.GET.sort == 'cheap' %}selected{% endif %}>Сначала дешевые</option>
+                    <option value="expensive" {% if request.GET.sort == 'expensive' %}selected{% endif %}>Сначала дорогие</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid"><button type="submit" class="btn btn-danger btn-lg rounded-3">Найти</button></div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Сайдбар категорий -->
+    <div class="col-md-3 mb-4">
+        <div class="list-group shadow-sm border-0 rounded-4 overflow-hidden">
+            <a href="{% url 'ad_list' %}" class="list-group-item list-group-item-action py-3 {% if not current_category %}active bg-danger border-danger{% endif %}">
+                🌍 Все категории
+            </a>
+            {% for cat in categories %}
+                <a href="{% url 'category_list' cat.slug %}" class="list-group-item list-group-item-action py-3 {% if current_category == cat.slug %}active bg-danger border-danger{% endif %}">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Сетка объявлений -->
+    <div class="col-md-9">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for ad in page_obj %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden text-decoration-none {% if ad.is_top %}border-warning border-3{% endif %}" style="{% if ad.is_top %}background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);{% endif %}">
+                        {% if ad.is_top %}
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-warning text-dark fw-bold">⭐ VIP</span>
+                            </div>
+                        {% endif %}
+                        {% if ad.image %}
+                            <img src="{{ ad.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Фото">
+                        {% else %}
+                            <div class="bg-light d-flex justify-content-center align-items-center text-muted" style="height: 180px;">Нет фото</div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title text-truncate mb-2">
+                                <a href="{% url 'ad_detail' ad.uuid %}" class="text-dark text-decoration-none stretched-link">{{ ad.title }}</a>
+                            </h6>
+                            <h5 class="text-danger fw-bold mt-auto mb-1">{% if ad.price == 0 %}Даром{% else %}{{ ad.price }} ₸{% endif %}</h5>
+                            <small class="text-muted">{{ ad.city.name }} • {{ ad.created_at|date:"d M" }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5"><h5 class="text-muted">Ничего не найдено 😔</h5></div>
+            {% endfor %}
+        </div>
+
+        <!-- Пагинация -->
+        {% if page_obj.has_other_pages %}
+            <div class="d-flex justify-content-center mt-5">
+                <div class="btn-group shadow-sm">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="btn btn-white border text-danger">← Назад</a>
+                    {% endif %}
+                    <span class="btn btn-danger">Стр. {{ page_obj.number }}</span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="btn btn-white border text-danger">Вперед →</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
